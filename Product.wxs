@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Powershell Context Tools" Language="1033" Version="1.0.0" Manufacturer="CodingCarson" UpgradeCode="{8a238da0-6085-4357-9417-b800d3c24dfe}">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+		<Feature Id="ProductFeature" Title="Powershell Context Tools" Level="1">
+			<ComponentGroupRef Id="RegistryBaseGroup" />
+			<ComponentGroupRef Id="RegistryOnFolderClickGroup" />
+			<ComponentRef Id="UninstallShortcutComponent" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="Powershell Context Tools" />
+			</Directory>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="Powershell Context Tools"/>
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<!-- Base Folder Context Menu -->
+		<ComponentGroup Id="RegistryBaseGroup">
+			<Component Id="PowershellBaseOptionsComponent" Directory="TARGETDIR">
+				<RegistryKey Root="HKCR" Key="Directory\Background\shell\Powershell Context Tools">
+					<RegistryValue Type="string" Name="MUIVerb" Value="Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\Background\shell\Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
+
+					<RegistryKey Key="Shell">
+						<!-- Submenu -->
+
+						<!-- Open Directory As Administrator -->
+						<RegistryKey Key="OpenDirectoryAsAdministrator">
+							<RegistryValue Type="string" Value="Open Directory As Administrator"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -Command &quot;$command = 'Set-Location \&quot;%V\&quot;'; $bytes = [\[]System.Text.Encoding[\]]::Unicode.GetBytes($command); $encodedCommand = [\[]Convert[\]]::ToBase64String($bytes); Start-Process powershell.exe -ArgumentList '-NoExit', '-EncodedCommand', $encodedCommand -Verb RunAs; Stop-Process -Id ((Get-CimInstance Win32_Process -Filter 'Name = \&quot;WindowsTerminal.exe\&quot;').ProcessId); exit&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- Open Directory -->
+						<RegistryKey Key="OpenDirectory">
+							<RegistryValue Type="string" Value="Open Directory"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location &quot;'%V'&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- Take Directory Ownership -->
+						<RegistryKey Key="TakeDirectoryOwnership">
+							<RegistryValue Type="string" Value="Take Directory Ownership"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoExit -Command Start-Process cmd -ArgumentList '/s,/c,takeown /a /r /d Y /f %V' -Verb RunAs"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- End of Submenu -->
+					</RegistryKey>
+				</RegistryKey>
+			</Component>
+		</ComponentGroup>
+
+
+		<!-- On Folder Context Menu -->
+		<ComponentGroup Id="RegistryOnFolderClickGroup">
+			<Component Id="PowershellOnFolderOptionsComponent" Directory="TARGETDIR">
+				<RegistryKey Root="HKCR" Key="Directory\shell\Powershell Context Tools">
+					<RegistryValue Type="string" Name="MUIVerb" Value="Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\shell\Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
+					
+					<RegistryKey Key="Shell">
+						<!-- Submenu -->
+						
+						<!-- Open Directory As Administrator -->
+						<RegistryKey Key="OpenDirectoryAsAdministrator">
+							<RegistryValue Type="string" Value="Open Directory As Administrator"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -Command &quot;$command = 'Set-Location \&quot;%V\&quot;'; $bytes = [\[]System.Text.Encoding[\]]::Unicode.GetBytes($command); $encodedCommand = [\[]Convert[\]]::ToBase64String($bytes); Start-Process powershell.exe -ArgumentList '-NoExit', '-EncodedCommand', $encodedCommand -Verb RunAs; Stop-Process -Id ((Get-CimInstance Win32_Process -Filter 'Name = \&quot;WindowsTerminal.exe\&quot;').ProcessId); exit&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- Open Directory -->
+						<RegistryKey Key="OpenDirectory">
+							<RegistryValue Type="string" Value="Open Directory"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location &quot;'%V'&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- Take Directory Ownership -->
+						<RegistryKey Key="TakeDirectoryOwnership">
+							<RegistryValue Type="string" Value="Take Directory Ownership"/>
+							<RegistryKey Key="command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoExit -Command Start-Process cmd -ArgumentList '/s,/c,takeown /a /r /d Y /f %V' -Verb RunAs"/>
+							</RegistryKey>
+						</RegistryKey>
+
+					<!-- End of Submenu -->
+					</RegistryKey>
+				</RegistryKey>
+			</Component>
+		</ComponentGroup>
+
+		<Component Id="UninstallShortcutComponent" Directory="ApplicationProgramsFolder" Guid="{01A1D750-F5E2-524C-BAAA-F450ABC49CAD}">
+			<CreateFolder />
+			<RemoveFolder Id="RemoveProgramMenuDir" On="uninstall" />
+			<RegistryValue Root="HKCU" Key="Software\Microsoft\PowershellContextTools" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+		</Component>
+	</Fragment>
+</Wix>
