@@ -1,6 +1,16 @@
 # PowerShell Context Tools
 A set of useful options for the Windows context menu to help speed up development tasks using PowerShell!
 
+#### Table of Contents:
+- [PowerShell Context Tools](#powershell-context-tools)
+      - [Table of Contents:](#table-of-contents)
+  - [Features](#features)
+  - [Screenshots](#screenshots)
+  - [Usage](#usage)
+      - [Easy Method:](#easy-method)
+      - [DIY Method:](#diy-method)
+  - [Built Using](#built-using)
+
 ## Features
 - Open Current Directory in PowerShell
 - Open Current Directory as Administrator in PowerShell
