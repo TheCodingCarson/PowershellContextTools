@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:ui="http://schemas.microsoft.com/wix/2006/ui">
 	<Product Id="*" Name="Powershell Context Tools" Language="1033" Version="1.0.0" Manufacturer="CodingCarson" UpgradeCode="{8a238da0-6085-4357-9417-b800d3c24dfe}">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" Description="Powershell Context Tools" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
 		<Feature Id="ProductFeature" Title="Powershell Context Tools" Level="1">
 			<ComponentGroupRef Id="RegistryBaseGroup" />
 			<ComponentGroupRef Id="RegistryOnFolderClickGroup" />
+			<ComponentGroupRef Id="RegistryOnPs1FileClickGroup" />
 			<ComponentRef Id="UninstallShortcutComponent" />
 		</Feature>
+
+		<!-- Set the WIXUI_INSTALLDIR property (Fixes Error Code 2819) -->
+		<UI>
+			<UIRef Id="WixUI_InstallDir" />
+			<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+		</UI>
 	</Product>
 
 	<Fragment>
@@ -24,36 +31,42 @@
 	</Fragment>
 
 	<Fragment>
+		
 		<!-- Base Folder Context Menu -->
 		<ComponentGroup Id="RegistryBaseGroup">
 			<Component Id="PowershellBaseOptionsComponent" Directory="TARGETDIR">
-				<RegistryKey Root="HKCR" Key="Directory\Background\shell\Powershell Context Tools">
+				<RegistryKey Root="HKCR" Key="Directory\Background\shell\PowershellContextTools" ForceDeleteOnUninstall="yes">
 					<RegistryValue Type="string" Name="MUIVerb" Value="Powershell Context Tools"/>
-					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\Background\shell\Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\Background\shell\PowershellContextTools"/>
 					<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
 
 					<RegistryKey Key="Shell">
 						<!-- Submenu -->
 
 						<!-- Open Directory As Administrator -->
-						<RegistryKey Key="OpenDirectoryAsAdministrator">
-							<RegistryValue Type="string" Value="Open Directory As Administrator"/>
+						<RegistryKey Key="runas">
+							<RegistryValue Type="string" Value="Open Directory (Admin)"/>
+							<RegistryValue Type="string" Name="HasLUAShield" Value=""/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
 							<RegistryKey Key="command">
-								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -Command &quot;$command = 'Set-Location \&quot;%V\&quot;'; $bytes = [\[]System.Text.Encoding[\]]::Unicode.GetBytes($command); $encodedCommand = [\[]Convert[\]]::ToBase64String($bytes); Start-Process powershell.exe -ArgumentList '-NoExit', '-EncodedCommand', $encodedCommand -Verb RunAs; Stop-Process -Id ((Get-CimInstance Win32_Process -Filter 'Name = \&quot;WindowsTerminal.exe\&quot;').ProcessId); exit&quot;"/>
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location -literalPath &quot;'%V'&quot;"/>
 							</RegistryKey>
 						</RegistryKey>
 
 						<!-- Open Directory -->
 						<RegistryKey Key="OpenDirectory">
 							<RegistryValue Type="string" Value="Open Directory"/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
 							<RegistryKey Key="command">
-								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location &quot;'%V'&quot;"/>
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location -literalPath &quot;'%V'&quot;"/>
 							</RegistryKey>
 						</RegistryKey>
 
 						<!-- Take Directory Ownership -->
 						<RegistryKey Key="TakeDirectoryOwnership">
 							<RegistryValue Type="string" Value="Take Directory Ownership"/>
+							<RegistryValue Type="string" Name="HasLUAShield" Value=""/>
+							<RegistryValue Type="string" Name="Icon" Value="explorer.exe,0"/>
 							<RegistryKey Key="command">
 								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoExit -Command Start-Process cmd -ArgumentList '/s,/c,takeown /a /r /d Y /f %V' -Verb RunAs"/>
 							</RegistryKey>
@@ -69,48 +82,93 @@
 		<!-- On Folder Context Menu -->
 		<ComponentGroup Id="RegistryOnFolderClickGroup">
 			<Component Id="PowershellOnFolderOptionsComponent" Directory="TARGETDIR">
-				<RegistryKey Root="HKCR" Key="Directory\shell\Powershell Context Tools">
+				<RegistryKey Root="HKCR" Key="Directory\shell\PowershellContextTools" ForceDeleteOnUninstall="yes">
 					<RegistryValue Type="string" Name="MUIVerb" Value="Powershell Context Tools"/>
-					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\shell\Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="Directory\shell\PowershellContextTools"/>
 					<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
-					
+
 					<RegistryKey Key="Shell">
 						<!-- Submenu -->
-						
+
 						<!-- Open Directory As Administrator -->
-						<RegistryKey Key="OpenDirectoryAsAdministrator">
-							<RegistryValue Type="string" Value="Open Directory As Administrator"/>
+						<RegistryKey Key="runas">
+							<RegistryValue Type="string" Value="Open Directory (Admin)"/>
+							<RegistryValue Type="string" Name="HasLUAShield" Value=""/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
 							<RegistryKey Key="command">
-								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -Command &quot;$command = 'Set-Location \&quot;%V\&quot;'; $bytes = [\[]System.Text.Encoding[\]]::Unicode.GetBytes($command); $encodedCommand = [\[]Convert[\]]::ToBase64String($bytes); Start-Process powershell.exe -ArgumentList '-NoExit', '-EncodedCommand', $encodedCommand -Verb RunAs; Stop-Process -Id ((Get-CimInstance Win32_Process -Filter 'Name = \&quot;WindowsTerminal.exe\&quot;').ProcessId); exit&quot;"/>
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location -literalPath &quot;'%V'&quot;"/>
 							</RegistryKey>
 						</RegistryKey>
 
 						<!-- Open Directory -->
 						<RegistryKey Key="OpenDirectory">
 							<RegistryValue Type="string" Value="Open Directory"/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
 							<RegistryKey Key="command">
-								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location &quot;'%V'&quot;"/>
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe&quot; -NoExit -Command Set-Location -literalPath &quot;'%V'&quot;"/>
 							</RegistryKey>
 						</RegistryKey>
 
 						<!-- Take Directory Ownership -->
 						<RegistryKey Key="TakeDirectoryOwnership">
 							<RegistryValue Type="string" Value="Take Directory Ownership"/>
+							<RegistryValue Type="string" Name="HasLUAShield" Value=""/>
+							<RegistryValue Type="string" Name="Icon" Value="explorer.exe,0"/>
 							<RegistryKey Key="command">
 								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoExit -Command Start-Process cmd -ArgumentList '/s,/c,takeown /a /r /d Y /f %V' -Verb RunAs"/>
 							</RegistryKey>
 						</RegistryKey>
 
-					<!-- End of Submenu -->
+						<!-- End of Submenu -->
 					</RegistryKey>
 				</RegistryKey>
 			</Component>
 		</ComponentGroup>
 
+		<!-- On .ps1 File Context Menu -->
+		<ComponentGroup Id="RegistryOnPs1FileClickGroup">
+			<Component Id="PowershellOnPs1FileOptionsComponent" Directory="TARGETDIR">
+				<RegistryKey Root="HKCR" Key="SystemFileAssociations\.ps1\Shell\PowershellContextTools" ForceDeleteOnUninstall="yes">
+					<RegistryValue Type="string" Name="MUIVerb" Value="Powershell Context Tools"/>
+					<RegistryValue Type="string" Name="ExtendedSubCommandsKey" Value="SystemFileAssociations\.ps1\Shell\PowershellContextTools"/>
+					<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
+
+					<RegistryKey Key="Shell">
+						<!-- Submenu -->
+
+						<!-- Run Script -->
+						<RegistryKey Key="RunWithPowerShell">
+							<RegistryValue Type="string" Value="Run with PowerShell"/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
+							<RegistryKey Key="Command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; &quot;-Command&quot; &quot;if((Get-ExecutionPolicy ) -ne 'AllSigned') { Set-ExecutionPolicy -Scope Process Bypass }; &amp; '%1'&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- Run Script as Administrator -->
+						<RegistryKey Key="runas">
+							<RegistryValue Type="string" Value="Run Script as Administrator"/>
+							<RegistryValue Type="string" Name="HasLUAShield" Value=""/>
+							<RegistryValue Type="string" Name="Icon" Value="powershell.exe,0"/>
+							<RegistryKey Key="Command">
+								<RegistryValue Type="string" Value="&quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; &quot;-Command&quot; &quot;if((Get-ExecutionPolicy ) -ne 'AllSigned') { Set-ExecutionPolicy -Scope Process Bypass }; &amp; '%1'&quot;"/>
+							</RegistryKey>
+						</RegistryKey>
+
+						<!-- End of Submenu -->
+					</RegistryKey>
+				</RegistryKey>
+			</Component>
+		</ComponentGroup>
+
+		<!-- Uninstall Shortcut Component -->
 		<Component Id="UninstallShortcutComponent" Directory="ApplicationProgramsFolder" Guid="{01A1D750-F5E2-524C-BAAA-F450ABC49CAD}">
 			<CreateFolder />
 			<RemoveFolder Id="RemoveProgramMenuDir" On="uninstall" />
 			<RegistryValue Root="HKCU" Key="Software\Microsoft\PowershellContextTools" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+			<RemoveRegistryKey Root="HKCR" Key="Software\Microsoft\PowershellContextTools" Action="removeOnUninstall"/>
+			<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
 		</Component>
+		
 	</Fragment>
 </Wix>
