@@ -18,10 +18,11 @@ A set of useful options for the Windows context menu to help speed up developmen
 
 </br>
 
-If you are looking for another feature please request it and I will add it as soon as possible!
-
 ## Screenshots
-![PowerShell Context Tools Screenshot](/assets/screenshots/contextmenu-screenshot.png?raw=true)
+If you are looking for another feature please request it and I will add it as soon as possible!
+| Directory & Drive Context Menu | File Context Menu |
+| :----: | :----: |
+| ![PowerShell Context Tools Screenshot](/assets/screenshots/contextmenu-screenshot.png?raw=true) | ![PowerShell Context Tools Screenshot](/assets/screenshots/file-contextmenu-screenshot.png?raw=true) |
 
 ## Usage
 #### <b>Easy Method:</b>
